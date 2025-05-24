@@ -62,7 +62,7 @@ download_and_extract_bootstrap() {
 	"$mirror/$version/community" \
 	$EXTRA_REPOS \
 	> /alpine/etc/apk/repositories
-	_apk add --allow-untrusted --root /alpine --initdb alpine-baselayout busybox busybox-suid musl-utils alpine-release alpine-make-rootfs busybox-static bash
+	_apk add --allow-untrusted --root /alpine --initdb alpine-baselayout busybox busybox-suid musl-utils alpine-release alpine-make-rootfs busybox-static bash apk-tools
 	if grep -E "^nameserver\s+127\." /etc/resolv.conf > /dev/null; then
 		echo "nameserver 8.8.8.8" > /alpine/etc/resolv.conf
 	else
@@ -98,7 +98,7 @@ delete_all() {
 }
 
 chroot_exec() {
-	"/alpine/bin/busybox.static chroot" /alpine /bin/bash -c "$*"
+	"/alpine/bin/busybox.static" chroot /alpine /bin/bash -c "$*"
 }
 
 configure_chroot() {
@@ -109,7 +109,7 @@ configure_chroot() {
 
 install_packages() {
 	packages="linux-lts ca-certificates openssh-server openssh-client linux-headers linux-firmware grub nano"
-	chroot_exec "alpine-make-rootfs --branch $version --timezone '$asia' -m $mirror -p $packages /mnt"
+	chroot_exec "alpine-make-rootfs --branch $version --timezone '$asia' -m $mirror -p '$packages' /mnt"
 	/usr/sbin/update-ca-certificates
 	# Here we actually want the words to split, therefore no quotes.
 	unset packages
